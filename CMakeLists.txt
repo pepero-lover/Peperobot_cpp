@@ -76,6 +76,10 @@ add_executable(
         header/engine/nnue/nnue_dirty.h
 )
 
+if(MINGW)
+    target_link_options(Peperobot_Cpp PRIVATE -static-libgcc -static-libstdc++ -static)
+endif()
+
 target_compile_options(Peperobot_Cpp PRIVATE -mavx2 -mbmi -mbmi2 -mssse3 -msse4.1 -mpopcnt)
 target_compile_definitions(Peperobot_Cpp PRIVATE
         USE_AVX2 USE_SSSE3 USE_SSE41 USE_SSE2
