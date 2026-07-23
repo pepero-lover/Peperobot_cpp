@@ -29,6 +29,8 @@ namespace Evaluate {
     void nnue_refresh_root(const Board& board);
     void nnue_do_move(const Board& board);
 
+    int to_display_cp(int internal_value);
+
     int evaluate(const Board& board);
 }
 

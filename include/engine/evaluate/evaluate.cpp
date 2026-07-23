@@ -684,6 +684,12 @@ namespace Evaluate {
         NNUEAdapter::nnue_do_move(board, g_featureTransformer);
     }
 
+    constexpr int NormalizeToPawnValue = 361;
+
+    int to_display_cp(int internal_value) {
+        return internal_value * 100 / NormalizeToPawnValue;
+    }
+
     int evaluate(const Board& board) {
         return NNUEAdapter::evaluate(board, g_networks);
     }

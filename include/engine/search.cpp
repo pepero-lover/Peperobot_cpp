@@ -631,7 +631,7 @@ void search_position(Board& board, int depth) {
         } else if (score > MATE_SCORE && score < MATE_VALUE) {
             out += " score mate " + std::to_string((MATE_VALUE - score) / 2 + 1);
         } else {
-            out += " score cp " + std::to_string(score);
+            out += " score cp " + std::to_string(Evaluate::to_display_cp(score));
         }
         out += " depth " + std::to_string(current_depth);
         out += " nodes " + std::to_string(s.nodes);
