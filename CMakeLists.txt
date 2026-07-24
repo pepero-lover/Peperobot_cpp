@@ -37,8 +37,8 @@ add_executable(
         include/bitboard/init.cpp
         header/bitboard/init.h
         header/board/pieces.h
-        include/board/Board.cpp
-        header/board/Board.h
+        include/board/board.cpp
+        header/board/board.h
         header/board/castling.h
         header/board/fen.h
         include/board/fen.cpp
