@@ -1,6 +1,6 @@
 EXE      := Peperobot_Cpp
 CC       ?= g++
-EVALFILE ?=
+EVALFILE ?= networks/nn-5af11540bbfe.nnue
 BUILD_DIR := build
 
 .DEFAULT_GOAL := all
