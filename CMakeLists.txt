@@ -74,6 +74,9 @@ add_executable(
         stockfish/nnue/nnue_accumulator.h
         stockfish/nnue/evaluate_nnue.h
         header/engine/nnue/nnue_dirty.h
+        header/engine/uci/bench_fens.h
+        include/engine/uci/bench.cpp
+        header/engine/uci/bench.h
 )
 
 if(MINGW)

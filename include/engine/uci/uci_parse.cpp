@@ -69,6 +69,7 @@ void parse_position(Board& board, const std::string& command) {
             }
         }
         parse_fen(board, ok ? fen.str() : Board::start_position);
+        TT::clear_tt();
     } else {
         board.set_start_pos();
     }

@@ -78,7 +78,6 @@ void uci_loop() {
         }
         else if (input.rfind("position", 0) == 0) {
             parse_position(board_uci, input);
-            TT::clear_tt();
         }
         else if (input == "ucinewgame") {
             board_uci.set_start_pos();

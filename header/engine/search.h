@@ -79,6 +79,6 @@ public:
     void reset_for_new_search();
 };
 
-void search_position(Board& board, int depth);
+long long search_position(Board& board, int depth, bool silent = false);
 
 #endif //PEPEROBOT_CPP_SEARCH_H

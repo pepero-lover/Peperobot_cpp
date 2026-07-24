@@ -631,7 +631,7 @@ void Search::reset_for_new_search() {
     std::memset(excluded_move, 0, sizeof(excluded_move));
 }
 
-void search_position(Board& board, int depth) {
+long long search_position(Board& board, int depth, bool silent) {
     static Search s;
     s.reset_for_new_search();
     Evaluate::nnue_refresh_root(board);
@@ -695,7 +695,9 @@ void search_position(Board& board, int depth) {
         for (int count = 0; count < s.pv_length[0]; count++) {
             out += move_to_string(s.pv_table[0][count]) + " ";
         }
-        std::cout << out << std::endl;
+        if (!silent) {
+            std::cout << out << std::endl;
+        }
 
         if (!TimeControl::stopped && s.pv_length[0] > 0) {
             s.best_move = s.pv_table[0][0];
@@ -715,5 +717,9 @@ void search_position(Board& board, int depth) {
         }
     }
 
-    std::cout << "bestmove " << move_to_string(s.best_move) << std::endl;
+    if (!silent) {
+        std::cout << "bestmove " << move_to_string(s.best_move) << std::endl;
+    }
+
+    return s.nodes;
 }
