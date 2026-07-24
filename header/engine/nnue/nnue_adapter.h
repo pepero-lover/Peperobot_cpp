@@ -13,7 +13,7 @@
 #include "header/bitboard/bb_utils.h"
 #include "header/bitboard/constants.h"
 #include "header/bitboard/squares.h"
-#include "header/board/Board.h"
+#include "header/board/board.h"
 #include "header/board/pieces.h"
 #include "header/engine/nnue/nnue_adapter.h"
 
@@ -182,10 +182,10 @@ namespace NNUEAdapter {
     };
 
     // ply별 스택 (스레드마다 하나)
-    inline thread_local Accumulator g_accStack[Board::MAX_DEPTH + 8];
+    inline thread_local Accumulator g_accStack[board::MAX_DEPTH + 8];
 
     // color 관점을 처음부터 완전히 재계산 (킹 이동/루트 초기화 시 사용)
-    inline void refresh_accumulator(const Board& b, int color, const MyFeatureTransformer& ft, Accumulator& acc) {
+    inline void refresh_accumulator(const board& b, int color, const MyFeatureTransformer& ft, Accumulator& acc) {
         int ksq = __builtin_ctzll(color == white ? b.bitboards[K] : b.bitboards[k]);
 
         std::memcpy(acc.accumulation[color], ft.biases, sizeof(ft.biases));
@@ -241,7 +241,7 @@ namespace NNUEAdapter {
         cur.computed[color] = true;
     }
 
-    inline void nnue_do_move(const Board& b, const MyFeatureTransformer& ft) {
+    inline void nnue_do_move(const board& b, const MyFeatureTransformer& ft) {
         int ply = b.ply;
         const NNUEDirtyPiece& dirty = b.nnue_dirty_history[ply - 1];
         Accumulator& prev = g_accStack[ply - 1];
@@ -258,7 +258,7 @@ namespace NNUEAdapter {
     }
 
     // 탐색 시작(루트) 시 1회 호출
-    inline void nnue_refresh_root(const Board& b, const MyFeatureTransformer& ft) {
+    inline void nnue_refresh_root(const board& b, const MyFeatureTransformer& ft) {
         refresh_accumulator(b, white, ft, g_accStack[b.ply]);
         refresh_accumulator(b, black, ft, g_accStack[b.ply]);
     }
@@ -266,7 +266,7 @@ namespace NNUEAdapter {
     // =====================================================================
     // 최종 평가: accumulator 스택에서 읽기만 함 (재계산 없음)
     // =====================================================================
-    inline std::int32_t evaluate(const Board& b, Network networks[LayerStacks]) {
+    inline std::int32_t evaluate(const board& b, Network networks[LayerStacks]) {
         Accumulator& acc = g_accStack[b.ply];
 
         int stm = b.side, opp = 1 - b.side;

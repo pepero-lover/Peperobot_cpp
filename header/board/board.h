@@ -12,7 +12,7 @@
 #include "header/bitboard/squares.h"
 #include "header/engine/nnue/nnue_dirty.h"
 
-class Board {
+class board {
 public:
     static constexpr int MAX_DEPTH = 1024;
     static const std::string start_position;
@@ -40,7 +40,7 @@ public:
     U64 hash_key_history[MAX_DEPTH] = {};
     int captured_piece_history[MAX_DEPTH] = {};
 
-    Board();
+    board();
 
     void reset();
     void set_start_pos();

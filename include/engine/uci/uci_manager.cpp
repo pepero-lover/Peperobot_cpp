@@ -20,7 +20,7 @@
 #include <unistd.h>
 #endif
 
-Board board_uci;
+board board_uci;
 
 bool stdin_has_data() {
     // 1. C++ std::cin 내부 버퍼에 아직 읽지 않은 데이터가 남아있는지 우선 확인
@@ -70,7 +70,7 @@ void communicate() {
 void uci_loop() {
     std::string input;
 
-    parse_fen(board_uci, Board::start_position);
+    parse_fen(board_uci, board::start_position);
 
     while (std::getline(std::cin, input)) {
         if (input == "isready") {

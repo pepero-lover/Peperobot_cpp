@@ -7,7 +7,7 @@
 
 #pragma once
 
-int see(const Board& board, int move);
-int captured_value(const Board& board, int move);
+int see(const board& board, int move);
+int captured_value(const board& board, int move);
 
 #endif //PEPEROBOT_CPP_SEE_H

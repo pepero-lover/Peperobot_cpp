@@ -28,7 +28,7 @@ void init_hash_keys() {
     side_key = get_random_u64();
 }
 
-U64 generate_hash_key(const Board& board) {
+U64 generate_hash_key(const board& board) {
     U64 final_key = 0ULL;
 
     for (int piece = P; piece <= k; piece++) {

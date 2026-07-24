@@ -5,7 +5,7 @@
 #include <chrono>
 
 #include "header/bitboard/bb_utils.h"
-#include "header/board/Board.h"
+#include "header/board/board.h"
 #include "header/board/pieces.h"
 #include <fstream>
 
@@ -702,11 +702,11 @@ namespace Evaluate {
         return load_nnue_stream(stream);
     }
 
-    void nnue_refresh_root(const Board& board) {
+    void nnue_refresh_root(const board& board) {
         NNUEAdapter::nnue_refresh_root(board, g_featureTransformer);
     }
 
-    void nnue_do_move(const Board& board) {
+    void nnue_do_move(const board& board) {
         NNUEAdapter::nnue_do_move(board, g_featureTransformer);
     }
 
@@ -716,7 +716,7 @@ namespace Evaluate {
         return internal_value * 100 / NormalizeToPawnValue;
     }
 
-    int evaluate(const Board& board) {
+    int evaluate(const board& board) {
         return NNUEAdapter::evaluate(board, g_networks);
     }
 }

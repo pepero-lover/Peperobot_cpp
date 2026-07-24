@@ -10,7 +10,7 @@
 #include "header/board/pieces.h"
 #include "header/hash/zobrist.h"
 
-bool is_square_attacked(const Board& board, int square, int side) {
+bool is_square_attacked(const board& board, int square, int side) {
     if (side == white && (pawn_attacks[black][square] & board.bitboards[P])) return true;
     if (side == black && (pawn_attacks[white][square] & board.bitboards[p])) return true;
     if (knight_attacks[square] & (side == white ? board.bitboards[N] : board.bitboards[n])) return true;
@@ -43,7 +43,7 @@ static void add_pawn_promotion_moves(MoveList& list, int source, int target, int
     list.add(encode_move(source, target, piece, prom_n, is_capture, false, false, false));
 }
 
-static void generate_white_castling(const Board& board, MoveList& list, int king_sq, U64 occupancy) {
+static void generate_white_castling(const board& board, MoveList& list, int king_sq, U64 occupancy) {
     if ((board.castle & WK) && get_bit(board.bitboards[R], h1)) {
         if (!get_bit(occupancy, f1) && !get_bit(occupancy, g1)) {
             if (!is_square_attacked(board, king_sq, black) &&
@@ -64,7 +64,7 @@ static void generate_white_castling(const Board& board, MoveList& list, int king
     }
 }
 
-static void generate_black_castling(const Board& board, MoveList& list, int king_sq, U64 occupancy) {
+static void generate_black_castling(const board& board, MoveList& list, int king_sq, U64 occupancy) {
     if ((board.castle & BK) && get_bit(board.bitboards[r], h8)) {
         if (!get_bit(occupancy, f8) && !get_bit(occupancy, g8)) {
             if (!is_square_attacked(board, king_sq, white) &&
@@ -85,7 +85,7 @@ static void generate_black_castling(const Board& board, MoveList& list, int king
     }
 }
 
-void generate_moves(const Board& board, MoveList& list) {
+void generate_moves(const board& board, MoveList& list) {
     list.count = 0;
     int side = board.side;
     U64 occupancy = board.occupancies[both];
@@ -238,7 +238,7 @@ void generate_moves(const Board& board, MoveList& list) {
     }
 }
 
-bool make_move(Board& board, Move move) {
+bool make_move(board& board, Move move) {
     board.enpassant_history[board.ply] = board.enpassant;
     board.castle_history[board.ply] = board.castle;
     board.half_ply_history[board.ply] = board.half_ply;
@@ -370,7 +370,7 @@ bool make_move(Board& board, Move move) {
     return true;
 }
 
-void unmake_move(Board& board, Move move) {
+void unmake_move(board& board, Move move) {
     board.ply--;
     board.side ^= 1;
 

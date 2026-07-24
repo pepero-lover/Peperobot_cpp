@@ -7,12 +7,12 @@
 
 #pragma once
 #include "move.h"
-#include "header/board/Board.h"
+#include "header/board/board.h"
 
-bool is_square_attacked(const Board& board, int square, int side);
-void generate_moves(const Board& board, MoveList& list);
+bool is_square_attacked(const board& board, int square, int side);
+void generate_moves(const board& board, MoveList& list);
 
-bool make_move(Board& board, Move move);
-void unmake_move(Board& board, Move move);
+bool make_move(board& board, Move move);
+void unmake_move(board& board, Move move);
 
 #endif //PEPEROBOT_CPP_MOVEGEN_H

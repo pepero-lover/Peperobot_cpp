@@ -5,7 +5,7 @@
 #include <iostream>
 #include <algorithm>
 
-#include "header/board/Board.h"
+#include "header/board/board.h"
 #include "header/engine/search.h"
 #include "header/engine/tt.h"
 #include "header/engine/uci/bench_fens.h"
@@ -14,7 +14,7 @@
 #include "header/time/time_utils.h"
 
 void run_bench(int depth) {
-    Board bench_board;
+    board bench_board;
     long long total_nodes = 0;
 
     long long start_time = get_time_ms();

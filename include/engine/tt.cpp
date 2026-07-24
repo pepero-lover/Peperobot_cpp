@@ -10,7 +10,7 @@
 
 #include "header/engine/search_constants.h"
 
-class Board;
+class board;
 
 namespace TT {
 
@@ -79,7 +79,7 @@ void clear_tt() {
     std::fill(tt_data.begin(), tt_data.end(), 0);
 }
 
-int read_hash_move(const Board& board) {
+int read_hash_move(const board& board) {
     if (TT_SIZE == 0) return 0;
 
     int index = static_cast<int>(board.hash_key & (TT_SIZE - 1));
@@ -93,7 +93,7 @@ int read_hash_move(const Board& board) {
     return 0;
 }
 
-int read_hash_entry(const Board& board, int alpha, int beta, int depth, int ply) {
+int read_hash_entry(const board& board, int alpha, int beta, int depth, int ply) {
     if (TT_SIZE == 0) return NO_HASH_ENTRY;
 
     int index = static_cast<int>(board.hash_key & (TT_SIZE - 1));
@@ -119,7 +119,7 @@ int read_hash_entry(const Board& board, int alpha, int beta, int depth, int ply)
     return NO_HASH_ENTRY;
 }
 
-bool probe_raw(const Board& board, int ply, int& out_score, int& out_depth, int& out_flag) {
+bool probe_raw(const board& board, int ply, int& out_score, int& out_depth, int& out_flag) {
     if (TT_SIZE == 0) return false;
 
     int index = static_cast<int>(board.hash_key & (TT_SIZE - 1));
@@ -142,7 +142,7 @@ bool probe_raw(const Board& board, int ply, int& out_score, int& out_depth, int&
     return true;
 }
 
-void write_hash_entry(const Board& board, int score, int depth, int hash_flag, int best_move, int ply) {
+void write_hash_entry(const board& board, int score, int depth, int hash_flag, int best_move, int ply) {
     if (TT_SIZE == 0) return;
 
     int index = static_cast<int>(board.hash_key & (TT_SIZE - 1));

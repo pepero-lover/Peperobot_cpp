@@ -6,7 +6,7 @@
 
 #include "header/bitboard/attacks.h"
 #include "header/bitboard/bb_utils.h"
-#include "header/board/Board.h"
+#include "header/board/board.h"
 #include "header/board/pieces.h"
 #include "header/movegen/move.h"
 
@@ -17,7 +17,7 @@ constexpr int PIECE_VALUE[12] = {
     100, 320, 330, 500, 900, 20000
 };
 
-int get_piece_on_square(const Board& board, int square, int side) {
+int get_piece_on_square(const board& board, int square, int side) {
     U64 mask = 1ULL << square;
     int start = (side == white) ? P : p;
     for (int i = 0; i <= 5; i++) {
@@ -26,7 +26,7 @@ int get_piece_on_square(const Board& board, int square, int side) {
     return -1;
 }
 
-U64 get_attackers_to(const Board& board, int square, U64 occupancy) {
+U64 get_attackers_to(const board& board, int square, U64 occupancy) {
     U64 attackers = 0ULL;
 
     attackers |= pawn_attacks[black][square] & board.bitboards[P];
@@ -47,7 +47,7 @@ U64 get_attackers_to(const Board& board, int square, U64 occupancy) {
     return attackers & occupancy;
 }
 
-int least_valuable_attacker_square(const Board& board, U64 attackers, int side) {
+int least_valuable_attacker_square(const board& board, U64 attackers, int side) {
     int start = (side == white) ? P : p;
     for (int i = 0; i <= 5; i++) {
         U64 bb = board.bitboards[start + i] & attackers;
@@ -58,7 +58,7 @@ int least_valuable_attacker_square(const Board& board, U64 attackers, int side) 
 
 } // 익명 네임스페이스
 
-int see(const Board& board, int move) {
+int see(const board& board, int move) {
     int from = get_move_source(move);
     int to   = get_move_target(move);
     int side = board.side;
@@ -115,7 +115,7 @@ int see(const Board& board, int move) {
     return gain[0];
 }
 
-int captured_value(const Board& board, int move) {
+int captured_value(const board& board, int move) {
     int side = board.side;
     if (get_move_enpassant(move)) {
         return PIECE_VALUE[(side == white) ? p : P];

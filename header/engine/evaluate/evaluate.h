@@ -6,7 +6,7 @@
 #define PEPEROBOT_CPP_EVALUATE_H
 
 #pragma once
-#include "header/board/Board.h"
+#include "header/board/board.h"
 
 namespace Evaluate {
 
@@ -20,19 +20,19 @@ namespace Evaluate {
     void set_material_score(int phase, int piece_type, int value);
     int  get_material_score(int phase, int piece_type);
 
-    int get_king_safety_penalty(const Board& board, int side);
+    int get_king_safety_penalty(const board& board, int side);
 
-    RawScores compute_raw_scores(const Board& board);
+    RawScores compute_raw_scores(const board& board);
 
     bool load_nnue(const std::string& path);
     bool load_nnue_embedded();
 
-    void nnue_refresh_root(const Board& board);
-    void nnue_do_move(const Board& board);
+    void nnue_refresh_root(const board& board);
+    void nnue_do_move(const board& board);
 
     int to_display_cp(int internal_value);
 
-    int evaluate(const Board& board);
+    int evaluate(const board& board);
 }
 
 #endif //PEPEROBOT_CPP_EVALUATE_H

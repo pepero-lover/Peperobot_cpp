@@ -5,7 +5,7 @@
 #include "search.h"
 #include "header/engine/search.h"
 
-#include "header/board/Board.h"
+#include "header/board/board.h"
 #include "header/movegen/move.h"
 #include "header/movegen/movegen.h"
 #include "header/bitboard/bb_utils.h"
@@ -36,7 +36,7 @@ int Search::CorrHistMaxCp = 64;
 int Search::CorrHistWeightScale = 256;
 int Search::CorrHistMinDepth = 4;
 
-inline bool is_repetition_draw(const Board& board, int root_ply) {
+inline bool is_repetition_draw(const board& board, int root_ply) {
     int start = board.ply - board.half_ply;
     if (start < 0) start = 0;
 
@@ -81,7 +81,7 @@ static bool _pawn_keys_init = [](){
     return true;
 }();
 
-static U64 compute_pawn_key(const Board& board) {
+static U64 compute_pawn_key(const board& board) {
     U64 key = 0ULL;
 
     U64 wp = board.bitboards[P];
@@ -172,7 +172,7 @@ static void apply_quiet_history_update(Search& s, int ply_index, int best_quiet_
 
 // ---------------------------------------------------------------------
 
-static int quiescence(Search& s, Board& board, int alpha, int beta) {
+static int quiescence(Search& s, board& board, int alpha, int beta) {
     if (TimeControl::stopped) return 0;
 
     if (s.thread_id == 0 && (s.nodes & 2047) == 0) {
@@ -285,7 +285,7 @@ static int quiescence(Search& s, Board& board, int alpha, int beta) {
     return alpha;
 }
 
-static int negamax(Search& s, Board& board, int alpha, int beta, int depth) {
+static int negamax(Search& s, board& board, int alpha, int beta, int depth) {
     if (TimeControl::stopped) return 0;
 
     if (s.thread_id == 0 && (s.nodes & 2047) == 0) {
@@ -631,7 +631,7 @@ void Search::reset_for_new_search() {
     std::memset(excluded_move, 0, sizeof(excluded_move));
 }
 
-long long search_position(Board& board, int depth, bool silent) {
+long long search_position(board& board, int depth, bool silent) {
     static Search s;
     s.reset_for_new_search();
     Evaluate::nnue_refresh_root(board);

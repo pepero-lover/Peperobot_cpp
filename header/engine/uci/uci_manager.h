@@ -6,9 +6,9 @@
 #define PEPEROBOT_CPP_UCI_MANAGER_H
 
 #pragma once
-#include "header/board/Board.h"
+#include "header/board/board.h"
 
-extern Board board_uci;
+extern board board_uci;
 
 void communicate();
 void uci_loop();

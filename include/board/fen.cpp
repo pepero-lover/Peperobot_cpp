@@ -8,12 +8,12 @@
 #include <cstdio>
 
 #include "header/bitboard/bb_utils.h"
-#include "header/board/Board.h"
+#include "header/board/board.h"
 #include "header/board/castling.h"
 #include "header/board/pieces.h"
 #include "header/hash/zobrist.h"
 
-void parse_fen(Board& board, const std::string& fen) {
+void parse_fen(board& board, const std::string& fen) {
     board.reset();
 
     std::istringstream iss(fen);
@@ -84,7 +84,7 @@ void parse_fen(Board& board, const std::string& fen) {
     board.hash_key = generate_hash_key(board);
 }
 
-void print_board(const Board& board) {
+void print_board(const board& board) {
     char square_char[64];
     for (int i = 0; i < 64; i++) square_char[i] = '.';
 

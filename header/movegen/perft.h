@@ -11,7 +11,7 @@
 
 static long long nodes = 0;
 
-void perft_driver(Board& board, int depth) {
+void perft_driver(board& board, int depth) {
     if (depth == 0) {
         nodes++;
         return;
@@ -29,7 +29,7 @@ void perft_driver(Board& board, int depth) {
     }
 }
 
-void perft_test(Board& board, int depth) {
+void perft_test(board& board, int depth) {
     printf("\n    Performance test    \n\n");
     nodes = 0;
 

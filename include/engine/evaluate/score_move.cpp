@@ -7,7 +7,7 @@
 #include "header/engine/evaluate/mvv_lva.h"
 #include "header/movegen/move.h"
 
-int score_move(Search& search, const Board& board, int move, int hash_move) {
+int score_move(Search& search, const board& board, int move, int hash_move) {
     if (move == hash_move && hash_move != 0) {
         return 2000000;
     }
@@ -53,13 +53,13 @@ int score_move(Search& search, const Board& board, int move, int hash_move) {
     }
 }
 
-void score_moves(Search& search, const Board& board, MoveList& list, int hash_move) {
+void score_moves(Search& search, const board& board, MoveList& list, int hash_move) {
     for (int i = 0; i < list.count; i++) {
         search.move_scores[i] = score_move(search, board, list.moves[i], hash_move);
     }
 }
 
-void score_quiescence_moves(Search& search, const Board& board, MoveList& list, int hash_move) {
+void score_quiescence_moves(Search& search, const board& board, MoveList& list, int hash_move) {
     for (int i = 0; i < list.count; i++) {
         if (get_move_capture(list.moves[i])) {
             search.move_scores[i] = score_move(search, board, list.moves[i], hash_move);

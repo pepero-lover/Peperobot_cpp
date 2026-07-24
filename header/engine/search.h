@@ -8,7 +8,7 @@
 #include <cstdint>
 
 #include "search_constants.h"
-#include "header/board/Board.h"
+#include "header/board/board.h"
 
 #pragma once
 
@@ -79,6 +79,6 @@ public:
     void reset_for_new_search();
 };
 
-long long search_position(Board& board, int depth, bool silent = false);
+long long search_position(board& board, int depth, bool silent = false);
 
 #endif //PEPEROBOT_CPP_SEARCH_H

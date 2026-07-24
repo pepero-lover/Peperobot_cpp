@@ -2,21 +2,21 @@
 // Created by PEPERO-LOVER on 26. 7. 21..
 //
 
-#include "header/board/Board.h"
+#include "header/board/board.h"
 
 #include <cstring>
 
 #include "header/board/fen.h"
 #include "header/hash/zobrist.h"
 
-const std::string Board::start_position =
+const std::string board::start_position =
     "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
-Board::Board() {
+board::board() {
     reset();
 }
 
-void Board::reset() {
+void board::reset() {
     memset(bitboards, 0, sizeof(bitboards));
     memset(occupancies, 0, sizeof(occupancies));
 
@@ -36,7 +36,7 @@ void Board::reset() {
     half_ply = 0;
 }
 
-void Board::set_start_pos() {
+void board::set_start_pos() {
     reset();
     parse_fen(*this, start_position);
 }

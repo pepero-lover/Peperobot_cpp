@@ -6,7 +6,7 @@
 #include <vector>
 #include <algorithm>
 
-#include "header/board/Board.h"
+#include "header/board/board.h"
 #include "header/board/fen.h"
 #include "header/board/pieces.h"
 #include "header/engine/search.h"
@@ -16,7 +16,7 @@
 #include "header/movegen/movegen.h"
 #include "header/time/time_utils.h"
 
-Move parse_move(Board& board, const std::string& command) {
+Move parse_move(board& board, const std::string& command) {
     MoveList list;
     generate_moves(board, list);
 
@@ -50,7 +50,7 @@ Move parse_move(Board& board, const std::string& command) {
     return 0;  // illegal
 }
 
-void parse_position(Board& board, const std::string& command) {
+void parse_position(board& board, const std::string& command) {
     std::istringstream iss(command);
     std::string token;
 
@@ -68,7 +68,7 @@ void parse_position(Board& board, const std::string& command) {
                 break;
             }
         }
-        parse_fen(board, ok ? fen.str() : Board::start_position);
+        parse_fen(board, ok ? fen.str() : board::start_position);
         TT::clear_tt();
     } else {
         board.set_start_pos();
@@ -82,7 +82,7 @@ void parse_position(Board& board, const std::string& command) {
     }
 }
 
-void parse_go(Board& board, const std::string& command) {
+void parse_go(board& board, const std::string& command) {
     int depth = -1;
 
     TimeControl::time_ms = -1;

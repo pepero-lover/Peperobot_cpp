@@ -7,9 +7,9 @@
 
 #pragma once
 #include <string>
-#include "Board.h"
+#include "board.h"
 
-void parse_fen(Board& board, const std::string& fen);
-void print_board(const Board& board);
+void parse_fen(board& board, const std::string& fen);
+void print_board(const board& board);
 
 #endif //PEPEROBOT_CPP_FEN_H
