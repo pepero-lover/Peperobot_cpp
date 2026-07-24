@@ -25,6 +25,7 @@ namespace Evaluate {
     RawScores compute_raw_scores(const Board& board);
 
     bool load_nnue(const std::string& path);
+    bool load_nnue_embedded();
 
     void nnue_refresh_root(const Board& board);
     void nnue_do_move(const Board& board);

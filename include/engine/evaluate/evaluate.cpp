@@ -8,7 +8,11 @@
 #include "header/board/Board.h"
 #include "header/board/pieces.h"
 #include <fstream>
+
+#include "header/engine/nnue/embedded_nnue.h"
 #include "header/engine/nnue/nnue_adapter.h"
+
+INCBIN(EmbeddedNNUE, EVALFILE);
 
 namespace Evaluate {
     /*
@@ -653,27 +657,49 @@ namespace Evaluate {
             stream.read(&(*architecture)[0], size);
             return bool(stream);
         }
+
+        // 실제 파싱 로직은 여기 한 군데에만 존재 (파일이든 메모리든 재사용)
+        bool load_nnue_stream(std::istream& stream) {
+            std::uint32_t version, hashValue;
+            std::string architecture;
+            if (!read_header(stream, &version, &hashValue, &architecture)) return false;
+
+            // FeatureTransformer 해시(4바이트) 스킵
+            Stockfish::Eval::NNUE::read_little_endian<std::uint32_t>(stream);
+            if (!g_featureTransformer.read_parameters(stream)) return false;
+
+            // 각 Network 앞의 해시(4바이트) 스킵
+            for (auto& net : g_networks) {
+                Stockfish::Eval::NNUE::read_little_endian<std::uint32_t>(stream);
+                if (!net.read_parameters(stream)) return false;
+            }
+            return true;
+        }
+
+        // 메모리 버퍼를 std::istream 처럼 다루기 위한 streambuf
+        struct membuf : std::streambuf {
+            membuf(const char* base, size_t size) {
+                char* p = const_cast<char*>(base);
+                setg(p, p, p + size);
+            }
+        };
+        struct imemstream : virtual membuf, std::istream {
+            imemstream(const char* base, size_t size)
+                : membuf(base, size)
+                , std::istream(static_cast<std::streambuf*>(this)) {}
+        };
     }
 
     bool load_nnue(const std::string& path) {
         std::ifstream stream(path, std::ios::binary);
         if (!stream) return false;
+        return load_nnue_stream(stream);
+    }
 
-        std::uint32_t version, hashValue;
-        std::string architecture;
-        if (!read_header(stream, &version, &hashValue, &architecture)) return false;
-
-        // FeatureTransformer 해시(4바이트) 스킵
-        Stockfish::Eval::NNUE::read_little_endian<std::uint32_t>(stream);
-        if (!g_featureTransformer.read_parameters(stream)) return false;
-
-        // 각 Network 앞에 있는 해시(4바이트) 스킵
-        for (auto& net : g_networks) {
-            Stockfish::Eval::NNUE::read_little_endian<std::uint32_t>(stream);
-            if (!net.read_parameters(stream)) return false;
-        }
-
-        return true;
+    bool load_nnue_embedded() {
+        imemstream stream(reinterpret_cast<const char*>(gEmbeddedNNUEData),
+                           static_cast<size_t>(gEmbeddedNNUESize));
+        return load_nnue_stream(stream);
     }
 
     void nnue_refresh_root(const Board& board) {

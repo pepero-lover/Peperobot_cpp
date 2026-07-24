@@ -21,9 +21,8 @@ void init_all(const fs::path& exe_dir) {
     init_hash_keys();
     init_castling_masks();
 
-    fs::path nnue_path = exe_dir / "nnue" / "nn-5af11540bbfe.nnue";
-    if (!Evaluate::load_nnue(nnue_path.string())) {
-        fprintf(stderr, "info string ERROR: failed to load NNUE file at %s\n", nnue_path.string().c_str());
+    if (!Evaluate::load_nnue_embedded()) {
+        fprintf(stderr, "info string ERROR: failed to load embedded NNUE\n");
         exit(1);
     }
 }

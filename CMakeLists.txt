@@ -77,6 +77,8 @@ add_executable(
         header/engine/uci/bench_fens.h
         include/engine/uci/bench.cpp
         header/engine/uci/bench.h
+        header/incbin/incbin.h
+        header/engine/nnue/embedded_nnue.h
 )
 
 if(MINGW)
@@ -91,3 +93,10 @@ target_compile_definitions(Peperobot_Cpp PRIVATE
         USE_PEXT
         IS_64BIT
 )
+
+if(NOT DEFINED EVALFILE)
+    set(EVALFILE "${CMAKE_SOURCE_DIR}/networks/nn-5af11540bbfe.nnue")
+endif()
+
+target_compile_definitions(Peperobot_Cpp PRIVATE EVALFILE="${EVALFILE}")
+target_include_directories(Peperobot_Cpp PRIVATE ${CMAKE_SOURCE_DIR}/third_party)
