@@ -57,10 +57,10 @@ static constexpr int FUTILITY_MARGIN[4] = { 0, 200, 300, 500 };
 static constexpr int DELTA_MARGIN = 200;
 
 // ---- singular extension ----
-static constexpr int SE_MIN_DEPTH = 7;         // 이 depth 이상에서만 시도
-static constexpr int SE_TT_DEPTH_MARGIN = 3;   // TT 저장 depth가 (depth - 이 값) 이상이어야 신뢰
-static constexpr int SE_MARGIN_PER_DEPTH = 2;  // singular_beta = tt_score - depth * 이 값
-static constexpr int SE_DOUBLE_EXT_MARGIN = 20; // 이만큼 더 낮으면 double extension
+int Search::SE_MIN_DEPTH = 7;         // 이 depth 이상에서만 시도
+int Search::SE_TT_DEPTH_MARGIN = 3;   // TT 저장 depth가 (depth - 이 값) 이상이어야 신뢰
+int Search::SE_MARGIN_PER_DEPTH = 2;  // singular_beta = tt_score - depth * 이 값
+int Search::SE_DOUBLE_EXT_MARGIN = 20; // 이만큼 더 낮으면 double extension
 
 static int reduction_table[64][64];
 static bool _reduction_table_init = [](){
@@ -349,14 +349,14 @@ static int negamax(Search& s, Board& board, int alpha, int beta, int depth) {
     bool singular_candidate = false;
     int singular_beta = 0;
 
-    if (s.ply != 0 && s.excluded_move[s.ply] == 0 && depth >= SE_MIN_DEPTH && hash_move != 0) {
+    if (s.ply != 0 && s.excluded_move[s.ply] == 0 && depth >= Search::SE_MIN_DEPTH && hash_move != 0) {
         int tt_raw_score, tt_raw_depth, tt_raw_flag;
         if (TT::probe_raw(board, s.ply, tt_raw_score, tt_raw_depth, tt_raw_flag)
-            && tt_raw_depth >= depth - SE_TT_DEPTH_MARGIN
+            && tt_raw_depth >= depth - Search::SE_TT_DEPTH_MARGIN
             && tt_raw_flag != TT::HASH_FLAG_ALPHA
             && std::abs(tt_raw_score) < MATE_SCORE - SearchConst::MAX_PLY) {
             singular_candidate = true;
-            singular_beta = tt_raw_score - depth * SE_MARGIN_PER_DEPTH;
+            singular_beta = tt_raw_score - depth * Search::SE_MARGIN_PER_DEPTH;
         }
     }
 
@@ -493,7 +493,7 @@ static int negamax(Search& s, Board& board, int alpha, int beta, int depth) {
 
             if (se_score < singular_beta) {
                 extension = 1;
-                if (!pv_node && se_score < singular_beta - SE_DOUBLE_EXT_MARGIN) {
+                if (!pv_node && se_score < singular_beta - Search::SE_DOUBLE_EXT_MARGIN) {
                     extension = 2;
                 }
             } else if (singular_beta >= beta) {

@@ -179,6 +179,14 @@ void parse_option(const std::string& name, const std::string& value) {
             Search::CorrHistWeightScale = std::stoi(value);
         } else if (option_name == "corrhistmindepth") {
             Search::CorrHistMinDepth = std::stoi(value);
+        } else if (option_name == "semindepth") {
+            Search::SE_MIN_DEPTH = std::stoi(value);
+        } else if (option_name == "settdepthmargin") {
+            Search::SE_TT_DEPTH_MARGIN = std::stoi(value);
+        } else if (option_name == "semarginperdepth") {
+            Search::SE_MARGIN_PER_DEPTH = std::stoi(value);
+        } else if (option_name == "sedoubleextmargin") {
+            Search::SE_DOUBLE_EXT_MARGIN = std::stoi(value);
         }
     } catch (...) {
         // 잘못된 값 무시

@@ -125,6 +125,11 @@ void uci_loop() {
             std::cout << "option name CorrHistWeightScale type spin default 256 min 1 max 4096\n";
             std::cout << "option name CorrHistMinDepth type spin default 4 min 0 max 16\n";
 
+            std::cout << "option name SEMinDepth type spin default 7 min 4 max 10\n";
+            std::cout << "option name SETTDepthMargin type spin default 3 min 0 max 8\n";
+            std::cout << "option name SEMarginPerDepth type spin default 2 min 0 max 8\n";
+            std::cout << "option name SEDoubleExtMargin type spin default 20 min 0 max 30\n";
+
             std::cout << "uciok\n";
         }
     }

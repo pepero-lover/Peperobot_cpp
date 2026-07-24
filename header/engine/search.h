@@ -56,6 +56,11 @@ public:
     static int CorrHistWeightScale; // SPSA 튜닝 대상
     static int CorrHistMinDepth;    // SPSA 튜닝 대상
 
+    static int SE_MIN_DEPTH;
+    static int SE_TT_DEPTH_MARGIN;
+    static int SE_MARGIN_PER_DEPTH;
+    static int SE_DOUBLE_EXT_MARGIN;
+
     int pawn_corr_hist[2][CORR_HIST_SIZE] = {};
 
     // ---- improving flag용 static eval history ----
