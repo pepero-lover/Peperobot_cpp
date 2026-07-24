@@ -32,6 +32,9 @@ public:
     int best_move = 0;
     int root_ply = 0;
 
+    // ---- singular extension: 특정 ply에서 검증 탐색 시 제외할 수 ----
+    int excluded_move[SearchConst::MAX_PLY] = {};
+
     // ---- quiet move tracking (history gravity/malus 용) ----
     static constexpr int MAX_QUIET_TRACKED = 64;
     int quiet_moves_at_ply[SearchConst::MAX_PLY][MAX_QUIET_TRACKED] = {};

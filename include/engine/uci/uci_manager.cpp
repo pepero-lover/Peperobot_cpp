@@ -119,7 +119,6 @@ void uci_loop() {
             std::cout << "option name Threads type spin default 1 min 1 max 1024\n";
             std::cout << "option name Hash type spin default 16 min 1 max 33554432\n";
             std::cout << "option name Clear Hash type button\n";
-            std::cout << "option name SyzygyPath type string default <empty>\n";
             std::cout << "option name Move Overhead type spin default 50 min 0 max 5000\n";
 
             std::cout << "option name CorrHistMax type spin default 64 min 0 max 400\n";

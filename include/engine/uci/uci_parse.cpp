@@ -171,9 +171,6 @@ void parse_option(const std::string& name, const std::string& value) {
             TT::resize_tt(std::stoi(value));
         } else if (option_name == "clear hash") {
             TT::clear_tt();
-        } else if (option_name == "syzygypath") {
-            if (!value.empty() && value != "<empty>") {
-            }
         } else if (option_name == "move overhead") {
             TimeControl::moveOverhead = std::stoi(value);
         } else if (option_name == "corrhistmax") {

@@ -119,6 +119,29 @@ int read_hash_entry(const Board& board, int alpha, int beta, int depth, int ply)
     return NO_HASH_ENTRY;
 }
 
+bool probe_raw(const Board& board, int ply, int& out_score, int& out_depth, int& out_flag) {
+    if (TT_SIZE == 0) return false;
+
+    int index = static_cast<int>(board.hash_key & (TT_SIZE - 1));
+
+    uint64_t check = tt_checks[index];
+    uint64_t data = tt_data[index];
+
+    if ((check ^ data) != board.hash_key) {
+        return false;
+    }
+
+    out_depth = unpack_depth(data);
+    out_flag = unpack_flag(data);
+
+    int score = unpack_score(data);
+    if (score < -SearchConst::MATE_SCORE) score += ply;
+    if (score > SearchConst::MATE_SCORE)  score -= ply;
+    out_score = score;
+
+    return true;
+}
+
 void write_hash_entry(const Board& board, int score, int depth, int hash_flag, int best_move, int ply) {
     if (TT_SIZE == 0) return;
 

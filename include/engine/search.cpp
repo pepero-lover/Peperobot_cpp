@@ -56,6 +56,12 @@ static constexpr int REDUCTION_LIMIT = 3;
 static constexpr int FUTILITY_MARGIN[4] = { 0, 200, 300, 500 };
 static constexpr int DELTA_MARGIN = 200;
 
+// ---- singular extension ----
+static constexpr int SE_MIN_DEPTH = 7;         // 이 depth 이상에서만 시도
+static constexpr int SE_TT_DEPTH_MARGIN = 3;   // TT 저장 depth가 (depth - 이 값) 이상이어야 신뢰
+static constexpr int SE_MARGIN_PER_DEPTH = 2;  // singular_beta = tt_score - depth * 이 값
+static constexpr int SE_DOUBLE_EXT_MARGIN = 20; // 이만큼 더 낮으면 double extension
+
 static int reduction_table[64][64];
 static bool _reduction_table_init = [](){
     for (int depth = 1; depth < 64; depth++)
@@ -312,7 +318,7 @@ static int negamax(Search& s, Board& board, int alpha, int beta, int depth) {
     }
 
     int tt_score = TT::read_hash_entry(board, alpha, beta, depth, s.ply);
-    if (s.ply != 0 && tt_score != TT::NO_HASH_ENTRY && !pv_node) {
+    if (s.ply != 0 && s.excluded_move[s.ply] == 0 && tt_score != TT::NO_HASH_ENTRY && !pv_node) {
         return tt_score;
     }
 
@@ -336,6 +342,22 @@ static int negamax(Search& s, Board& board, int alpha, int beta, int depth) {
 
     if (depth >= 4 && hash_move == 0 && !in_check && TT::TT_SIZE != 0) {
         depth--;
+    }
+
+    // ---- singular extension 후보 판정 ----
+    // hash_move가 다른 수들보다 압도적으로 좋다고 TT가 보증하면, 검증 탐색 후 depth를 늘려준다.
+    bool singular_candidate = false;
+    int singular_beta = 0;
+
+    if (s.ply != 0 && s.excluded_move[s.ply] == 0 && depth >= SE_MIN_DEPTH && hash_move != 0) {
+        int tt_raw_score, tt_raw_depth, tt_raw_flag;
+        if (TT::probe_raw(board, s.ply, tt_raw_score, tt_raw_depth, tt_raw_flag)
+            && tt_raw_depth >= depth - SE_TT_DEPTH_MARGIN
+            && tt_raw_flag != TT::HASH_FLAG_ALPHA
+            && std::abs(tt_raw_score) < MATE_SCORE - SearchConst::MAX_PLY) {
+            singular_candidate = true;
+            singular_beta = tt_raw_score - depth * SE_MARGIN_PER_DEPTH;
+        }
     }
 
     int legal_moves = 0;
@@ -429,6 +451,10 @@ static int negamax(Search& s, Board& board, int alpha, int beta, int depth) {
     for (int count = 0; count < list.count; count++) {
         int move = pick_next_move(s, count, list.count, list);
 
+        if (move == s.excluded_move[s.ply]) {
+            continue;
+        }
+
         bool is_capture = get_move_capture(move);
         bool is_promotion = get_move_promoted(move) != 0;
         bool is_killer_lmp = (move == s.killer_moves[0][s.ply] || move == s.killer_moves[1][s.ply]);
@@ -454,6 +480,28 @@ static int negamax(Search& s, Board& board, int alpha, int beta, int depth) {
             s.quiet_moves_at_ply[s.ply][s.quiet_count_at_ply[s.ply]++] = move;
         }
 
+        // ---- singular extension 검증 탐색 (수를 두기 전, 같은 노드/같은 ply에서 수행) ----
+        int extension = 0;
+
+        if (singular_candidate && move == hash_move) {
+            s.excluded_move[s.ply] = hash_move;
+            int se_depth = (depth - 1) / 2;
+            int se_score = negamax(s, board, singular_beta - 1, singular_beta, se_depth);
+            s.excluded_move[s.ply] = 0;
+
+            if (TimeControl::stopped) return 0;
+
+            if (se_score < singular_beta) {
+                extension = 1;
+                if (!pv_node && se_score < singular_beta - SE_DOUBLE_EXT_MARGIN) {
+                    extension = 2;
+                }
+            } else if (singular_beta >= beta) {
+                // multi-cut: hash_move 없이도 다른 수가 beta를 넘길 만큼 강함
+                return singular_beta;
+            }
+        }
+
         if (!make_move(board, move)) {
             continue;
         }
@@ -463,12 +511,14 @@ static int negamax(Search& s, Board& board, int alpha, int beta, int depth) {
         s.played_index_at_ply[s.ply] = Search::move_index(get_move_piece(move), get_move_target(move));
         legal_moves++;
 
+        int new_depth = depth - 1 + extension;
+
         bool gives_check = is_square_attacked(board,
             get_ls1b(board.bitboards[board.side == white ? K : k]),
             board.side ^ 1);
 
         if (moves_searched == 0) {
-            score = -negamax(s, board, -beta, -alpha, depth - 1);
+            score = -negamax(s, board, -beta, -alpha, new_depth);
         } else {
             bool is_killer = (move == s.killer_moves[0][s.ply] || move == s.killer_moves[1][s.ply]);
 
@@ -488,19 +538,19 @@ static int negamax(Search& s, Board& board, int alpha, int beta, int depth) {
                 if (!pv_node) reduction++;
                 if (reduction < 1) reduction = 1;
 
-                int lmr_depth = std::max(0, depth - 1 - reduction);
+                int lmr_depth = std::max(0, new_depth - reduction);
 
                 score = -negamax(s, board, -(alpha + 1), -alpha, lmr_depth);
 
                 if (score > alpha) {
-                    score = -negamax(s, board, -(alpha + 1), -alpha, depth - 1);
+                    score = -negamax(s, board, -(alpha + 1), -alpha, new_depth);
                 }
             } else {
-                score = -negamax(s, board, -(alpha + 1), -alpha, depth - 1);
+                score = -negamax(s, board, -(alpha + 1), -alpha, new_depth);
             }
 
             if (score > alpha && score < beta) {
-                score = -negamax(s, board, -beta, -alpha, depth - 1);
+                score = -negamax(s, board, -beta, -alpha, new_depth);
             }
         }
 
@@ -525,7 +575,9 @@ static int negamax(Search& s, Board& board, int alpha, int beta, int depth) {
             s.pv_length[s.ply] = s.pv_length[s.ply + 1];
 
             if (score >= beta) {
-                TT::write_hash_entry(board, beta, depth, TT::HASH_FLAG_BETA, move, s.ply);
+                if (s.excluded_move[s.ply] == 0) {
+                    TT::write_hash_entry(board, beta, depth, TT::HASH_FLAG_BETA, move, s.ply);
+                }
 
                 if (!get_move_capture(move)) {
                     apply_quiet_history_update(s, s.ply, move, history_bonus(depth));
@@ -555,7 +607,9 @@ static int negamax(Search& s, Board& board, int alpha, int beta, int depth) {
         update_pawn_corr_hist(s, side_to_move, pawn_corr_index, alpha, raw_static_eval, depth);
     }
 
-    TT::write_hash_entry(board, alpha, depth, hash_flag, tt_best_move, s.ply);
+    if (s.excluded_move[s.ply] == 0) {
+        TT::write_hash_entry(board, alpha, depth, hash_flag, tt_best_move, s.ply);
+    }
     return alpha;
 }
 
@@ -574,6 +628,7 @@ void Search::reset_for_new_search() {
     std::fill(std::begin(played_index_at_ply), std::end(played_index_at_ply), NULL_MOVE_INDEX);
     std::memset(pv_length, 0, sizeof(pv_length));
     std::memset(static_eval_stack, 0, sizeof(static_eval_stack));
+    std::memset(excluded_move, 0, sizeof(excluded_move));
 }
 
 void search_position(Board& board, int depth) {
